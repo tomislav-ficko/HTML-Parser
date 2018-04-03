@@ -22,10 +22,10 @@ public class HTMLParser {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.printf("Enter the file path: ");
+            System.out.println("Enter the file path: ");
             String path = null;
             if (scanner.hasNext()) {
-                path = scanner.next();
+                path = scanner.nextLine();
             }
             Path filePath = Paths.get(path);
 
@@ -41,15 +41,11 @@ public class HTMLParser {
 
         fillMap();
 
-        System.out.printf("Enter a command: ");
+        System.out.println("Enter a command: ");
         while (scanner.hasNext()) { //TODO provjeriti da li je unos ispravan
-            String command = scanner.next();
+            String command = scanner.nextLine();
 
-            if (command.equals("ALL")) {
-                for (String line : htmlDocument) {
-                    System.out.println(line);
-                }
-            } else if (command.contains("<") && command.contains(">")) {
+            if (command.contains("<") && command.contains(">")) {
                 getTag(command);
             } else if (command.contains("email")) {
                 getEmail(command);
@@ -59,6 +55,10 @@ public class HTMLParser {
                 getDate(command);
             } else if (command.contains("tel")) {
                 getTel(command);
+            } else if (command.equals("ALL")) {
+                for (String line : htmlDocument) {
+                    System.out.println(line);
+                }
             } else if (command.equals("HELP")) {
                 System.out.println("Popis opcija:");
                 for (Map.Entry<Integer, String> entry : allRegexCommands.entrySet()) {
@@ -72,7 +72,7 @@ public class HTMLParser {
                 break;
             }
 
-            System.out.printf("Enter a command: ");
+            System.out.println("Enter a command: ");
         }
     }
 
@@ -117,7 +117,7 @@ public class HTMLParser {
         String matchedString = matcher.group(); //pohrana pronadenog tag-a u varijablu
         String tagType = matchedString.substring(matchedString.indexOf("<") + 1, matchedString.indexOf(">")); //TODO provjeriti da li dobro nalazi tag
 
-        String tagRegex = "</?" + tagType + "\\.*>"; //regex koji ce se koristiti za trazenje tag-a u HTML dokumentu
+        String tagRegex = "<\\/?" + tagType + ".*>"; //regex koji ce se koristiti za trazenje tag-a u HTML dokumentu
         pattern = Pattern.compile(tagRegex);
         StringBuilder sb = new StringBuilder();
         boolean zastavicaZaDodavanjeSljedecegRedaUIspis = false;
@@ -137,6 +137,8 @@ public class HTMLParser {
                 sb = new StringBuilder();
                 zastavicaZaDodavanjeSljedecegRedaUIspis = false;
             }
+                System.out.println(matcher.find());
+
             if (matcher.find() && !zastavicaZaDodavanjeSljedecegRedaUIspis) { //ako smo nasli tag u trenutnoj liniji
                 int endingOfExpStart = matcher.end(); //spremamo index kraja tog tag-a
                 if (matcher.find(endingOfExpStart)) { //trazimo da li postoji oznaka kraja tag-a u toj liniji
